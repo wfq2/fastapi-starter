@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Place {
+    float value = 1;
+}
+
+service PlaceContext {
+    rpc GetPlace(Place) returns (Place) {}
+}

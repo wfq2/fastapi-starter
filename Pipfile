@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+pydantic = "1.8.2"
+grpcio = "*"
+grpcio-tools="*"
+mypy-protobuf = "*"
+types-protobuf = "*"
+
+[dev-packages]
+pyright = "*"
+flake8 = "*"
+pre-commit = "*"
+
+[scripts]
+lint-fix = "pre-commit run --all-files"
+start-dev = "uvicorn src.main:app --reload"
+generate-code = "python -m grpc_tools.protoc --python_out=./src/generated --grpc_python_out=./src/generated -I ./src ./src/**/protos/*.proto"
+
+[requires]
+python_version = "3.9"
