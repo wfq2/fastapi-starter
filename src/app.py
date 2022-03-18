@@ -1,19 +1,22 @@
-# app.py
-from concurrent import futures
-import grpc
-from src.generated.place_context.protos import place_pb2_grpc
-from src.place_context.servicer import PlaceServicer
+from fastapi import FastAPI
+
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi import Request
+from src.places.controller import router as places_router
+from src.container.container import init_container
+
+app = FastAPI()
+app.include_router(places_router)
+templates = Jinja2Templates(directory="static")
 
 
-class Server:
-    @staticmethod
-    def run():
-        server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-        place_pb2_grpc.add_PlaceContextServicer_to_server(PlaceServicer(), server)
-        server.add_insecure_port("[::]:50051")
-        server.start()
-        server.wait_for_termination()
+@app.on_event("startup")
+async def startup_event():
+    init_container()
 
 
-if __name__ == "__main__":
-    Server.run()
+@app.get("/page/{page_name}", response_class=HTMLResponse)
+async def root(request: Request, page_name: str):
+    data = {"page": page_name}
+    return templates.TemplateResponse("page.html", {"request": request, "data": data})

@@ -5,19 +5,29 @@ name = "pypi"
 
 [packages]
 pydantic = "1.8.2"
-grpcio = "*"
-grpcio-tools="*"
-mypy-protobuf = "*"
-types-protobuf = "*"
+fastapi = "*"
+jinja2 = "*"
+asyncpg = ">=0.24.0"
+alembic = ">=1.7.4"
+SQLAlchemy = ">=1.4.25"
+kink = "*"
 
 [dev-packages]
 pyright = "*"
 flake8 = "*"
 pre-commit = "*"
+pytest = "*"
+pytest-mock = "*"
+httpx = "*"
+requests = "*"
+testcontainers = "*"
+pytest-asyncio = "*"
 
 [scripts]
 lint-fix = "pre-commit run --all-files"
-start-dev = "uvicorn src.main:app --reload"
+start-dev = "python -m src.app"
+local-db = "docker-compose up"
+local-server = "uvicorn src.app:app --reload"
 generate-code = "python -m grpc_tools.protoc --python_out=./src/generated --grpc_python_out=./src/generated -I ./src ./src/**/protos/*.proto"
 
 [requires]
