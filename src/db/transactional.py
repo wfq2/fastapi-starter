@@ -1,18 +1,14 @@
-from contextlib import contextmanager
+
+from functools import wraps
 
 from kink import di
 
-from src.db.repository import Repository
 
+def transactional(func):
+    @wraps(func)
+    async def inner(*args, **kwargs):
+        db_session = di["db_session"]
+        async with db_session.begin():
+            await func(*args, **kwargs)
 
-@contextmanager
-async def session_scope():
-    """Provide a transactional scope around a series of operations."""
-    repository = di[Repository]
-    async with repository._db_session.begin() as s:
-        try:
-            yield s
-            s.commit()
-        except:
-            s.rollback()
-            raise
+    return inner

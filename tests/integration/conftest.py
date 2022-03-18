@@ -1,8 +1,10 @@
 import asyncio
-import time
 from typing import Generator
 
+from src.db.repository import Repository
+
 import pytest
+from kink import di
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.db.base import Base
 from src.db.session import _engine, _async_session
@@ -16,7 +18,7 @@ def event_loop(request) -> Generator:
     loop.close()
 
 
-@pytest.fixture()
+@pytest.fixture(autouse=True)
 async def db_session(mocker) -> AsyncSession:
     async with _engine.begin() as connection:
         await connection.run_sync(Base.metadata.drop_all)
@@ -27,3 +29,8 @@ async def db_session(mocker) -> AsyncSession:
             yield session
             await session.flush()
             await session.rollback()
+
+
+@pytest.fixture()
+def repository() -> "Repository":
+    return di[Repository]
