@@ -1,7 +1,7 @@
 from typing import TypeVar, Type
 from uuid import UUID
 
-from kink import di
+from sqlalchemy import update, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.places.db.place_dbo import PlaceDBO
@@ -30,16 +30,23 @@ class Repository:
     def _table(self, dbo: T):
         return self.TableMapping[dbo.__name__]
 
-    async def put(self, dbo: T) -> T:
+    async def insert(self, dbo: T) -> T:
         entry = self._table(dbo.__class__)(**dbo.dict())
         self._db_session.add(entry)
         return dbo
 
+    async def update(self, dbo: T) -> None:
+        entry = self._table(dbo.__class__)
+        statement = update(entry).where(entry.id == dbo.id).values(**dbo.dict())
+        await self._db_session.execute(statement)
+
     async def get(self, dbo: Type[T], id: UUID) -> T:
-        response = await self._db_session.get(self._table(dbo), id)
+        entry = self._table(dbo)
+        statement = select(entry).where(entry.id == id)
+        response = await self._db_session.execute(statement)
         if not response:
             raise DoesNotExistException
-        return dbo(**response.__dict__)
+        return dbo(**response.fetchone()[0].__dict__)
 
     @transactional
     async def upsert(self, dbo: Type[T], id: UUID, obj: T) -> T:
@@ -51,5 +58,8 @@ class Repository:
         to_upsert = obj
         if get_response:
             to_upsert = dbo(**{**obj.dict(), **to_upsert.dict()})
-        await self.put(to_upsert)
-        return to_upsert
+            await self.update(to_upsert)
+            return to_upsert
+        else:
+            await self.insert(to_upsert)
+            return to_upsert

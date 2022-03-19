@@ -9,7 +9,6 @@ from src.places.models.place import Place
 
 @inject
 class PlaceService:
-
     def __init__(self, repo: Repository):
         self.repository = repo
 
@@ -19,5 +18,5 @@ class PlaceService:
 
     async def put_place(self, place: Place) -> PlaceDBO:
         place_dbo = PlaceDBO(**place.dict())
-        response = await self.repository.put(place_dbo)
+        response = await self.repository.insert(place_dbo)
         return response
