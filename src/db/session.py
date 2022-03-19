@@ -1,4 +1,7 @@
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+import asyncio
+from contextvars import ContextVar
+
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_scoped_session
 from sqlalchemy.orm import sessionmaker
 
 from src.config import settings
@@ -12,4 +15,4 @@ _async_session = sessionmaker(_engine, class_=AsyncSession, expire_on_commit=Fal
 
 
 def get_session():
-    return _async_session()
+    return async_scoped_session(_async_session, scopefunc=asyncio.current_task)()

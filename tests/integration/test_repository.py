@@ -1,5 +1,6 @@
 import pytest
 
+from db.current_session import current_session
 from src.places.db.place_dbo import PlaceDBO
 from tests.integration.helpers import get_default_place_dbo
 
@@ -7,15 +8,18 @@ from tests.integration.helpers import get_default_place_dbo
 class TestRepository:
 
     @pytest.mark.asyncio
-    async def test_insert(self, repository):
+    async def test_insert(self, repository, db_session):
+        current_session.set(db_session)
         dbo = get_default_place_dbo()
-        r = await repository.insert(dbo)
+        async with repository.db_session.begin():
+            r = await repository.insert(dbo)
         assert r == dbo
         get_response = await repository.get(PlaceDBO, dbo.id)
         assert get_response == dbo
 
     @pytest.mark.asyncio
-    async def test_upsert(self, repository):
+    async def test_upsert(self, repository, db_session):
+        current_session.set(db_session)
         dbo = get_default_place_dbo()
         async with repository.db_session.begin():
             r = await repository.insert(dbo)

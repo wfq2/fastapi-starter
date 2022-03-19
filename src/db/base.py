@@ -19,4 +19,6 @@ class Base:
 
 
 # import all tables here
-from src.places.db.place import Place  # noqa: F401
+from src.db.table_mapping import TableMapping  # noqa: F401,E402
+
+Place = TableMapping["PlaceDBO"]

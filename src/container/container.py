@@ -6,6 +6,6 @@ from src.places.place_service import PlaceService
 
 
 def init_container():
-    di["db_session"] = lambda di: get_session()
-    di[Repository] = lambda di: Repository(di["db_session"])
+    di["session_maker"] = lambda di: get_session
+    di[Repository] = lambda di: Repository()
     di[PlaceService] = lambda di: PlaceService(di[Repository])
