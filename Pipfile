@@ -11,6 +11,9 @@ asyncpg = ">=0.24.0"
 alembic = ">=1.7.4"
 SQLAlchemy = ">=1.4.25"
 kink = "*"
+python-jose = "*"
+passlib = "*"
+bcrypt = "*"
 
 [dev-packages]
 pyright = "*"

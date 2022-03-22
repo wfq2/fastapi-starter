@@ -14,7 +14,7 @@ class TestRepository:
         async with repository.db_session.begin():
             r = await repository.insert(dbo)
         assert r == dbo
-        get_response = await repository.get(PlaceDBO, dbo.id)
+        get_response = await repository.get_by_id(PlaceDBO, dbo.id)
         assert get_response == dbo
 
     @pytest.mark.asyncio
@@ -26,8 +26,8 @@ class TestRepository:
         assert r == dbo
         dbo.name = "updated_name"
         await repository.upsert(PlaceDBO, dbo.id, dbo)
-        upsert_response = await repository.get(PlaceDBO, dbo.id)
+        upsert_response = await repository.get_by_id(PlaceDBO, dbo.id)
         assert upsert_response.name == "updated_name"
-        get_response = await repository.get(PlaceDBO, dbo.id)
+        get_response = await repository.get_by_id(PlaceDBO, dbo.id)
         assert get_response.id == dbo.id
         assert get_response.name == "updated_name"

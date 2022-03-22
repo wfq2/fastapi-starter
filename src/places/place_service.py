@@ -14,7 +14,7 @@ class PlaceService:
         self.repository = repo
 
     async def get_place(self, id: UUID) -> PlaceDBO:
-        db_response = await self.repository.get(PlaceDBO, id)
+        db_response = await self.repository.get_by_id(PlaceDBO, id)
         return db_response
 
     async def put_place(self, place: Place) -> PlaceDBO:

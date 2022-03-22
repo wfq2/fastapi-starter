@@ -1,4 +1,4 @@
-from typing import TypeVar, Type
+from typing import TypeVar, Type, Any
 from uuid import UUID
 
 from sqlalchemy import update, select, insert
@@ -13,7 +13,7 @@ T = TypeVar("T", bound=BaseDBO)
 
 class Repository:
 
-    def __init__(self, mapping = None):
+    def __init__(self, mapping=None):
         if not mapping:
             from src.db.table_mapping import TableMapping
             mapping = TableMapping
@@ -41,9 +41,19 @@ class Repository:
         statement = update(entry).where(entry.id == dbo.id).values(**dbo.dict())
         await self.db_session.execute(statement)
 
-    async def get(self, dbo: Type[T], id: UUID) -> T:
+    async def get_by_id(self, dbo: Type[T], id: UUID) -> T:
         entry = self._table(dbo)
         statement = select(entry).where(entry.id == id)
+        response = await self.db_session.execute(statement)
+        if not response:
+            raise DoesNotExistException
+        return dbo(**response.fetchone()[0].__dict__)
+
+    async def get_by_field(self, dbo: Type[T], field: str, value: Any) -> T:
+        entry = self._table(dbo)
+        if not hasattr(entry, field):
+            raise ValueError(f"{field} does not exist in table {entry}")
+        statement = select(entry).where(getattr(entry, field) == value)
         response = await self.db_session.execute(statement)
         if not response:
             raise DoesNotExistException
@@ -53,7 +63,7 @@ class Repository:
     async def upsert(self, dbo: Type[T], id: UUID, obj: T) -> T:
         get_response = None
         try:
-            get_response = await self.get(dbo, id)
+            get_response = await self.get_by_id(dbo, id)
         except DoesNotExistException:
             pass
         to_upsert = obj

@@ -7,9 +7,11 @@ from kink import di
 from db.current_session import current_session
 from src.container.container import init_container
 from src.places.controller import router as places_router
+from src.users.controller import router as user_router
 
 app = FastAPI()
 app.include_router(places_router)
+app.include_router(user_router)
 templates = Jinja2Templates(directory="static")
 
 
