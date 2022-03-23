@@ -1,8 +1,6 @@
 from functools import wraps
 
-from kink import di
-
-from db.current_session import current_session
+from container.request_context import current_session
 
 
 def transactional(func):

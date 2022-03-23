@@ -13,7 +13,7 @@ from src.db.base import Base  # noqa
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
-target_metadata = Base.metadata
+target_metadata = Base.metadata  # type: ignore
 
 fileConfig(config.config_file_name)
 

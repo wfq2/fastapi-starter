@@ -9,3 +9,8 @@ class User(BaseDBO):
     email: str
     disabled: bool = False
     scopes: List[str] = []
+
+
+anonymous_user = User(
+    first_name="ANONYMOUS", last_name="ANONYMOUS", email="ANONYMOUS", disabled=False
+)

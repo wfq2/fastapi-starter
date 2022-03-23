@@ -15,4 +15,4 @@ repos:
       rev: 'v0.931'  # Use the sha / tag you want to point at
       hooks:
       -   id: mypy
-          args: ['--exclude=src/container/migrations/*']
+          args: ['--exclude=src/container/migrations/*', '--ignore-missing-imports']

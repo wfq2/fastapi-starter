@@ -3,7 +3,7 @@ from uuid import UUID
 
 from sqlalchemy import update, select, insert
 
-from db.current_session import current_session
+from container.request_context import RequestContext
 from .base_dbo import BaseDBO
 from .transactional import transactional
 from ..exceptions.does_not_exist_exception import DoesNotExistException
@@ -12,16 +12,16 @@ T = TypeVar("T", bound=BaseDBO)
 
 
 class Repository:
-
     def __init__(self, mapping=None):
         if not mapping:
             from src.db.table_mapping import TableMapping
+
             mapping = TableMapping
         self.table_mapping = mapping
 
     @property
     def db_session(self):
-        session = current_session.get()
+        session = RequestContext.get_request_session()
         return session
 
     async def commit(self):

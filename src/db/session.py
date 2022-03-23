@@ -1,7 +1,10 @@
 import asyncio
-from contextvars import ContextVar
 
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_scoped_session
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+    async_scoped_session,
+)
 from sqlalchemy.orm import sessionmaker
 
 from src.config import settings

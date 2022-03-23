@@ -2,6 +2,7 @@ from uuid import UUID
 
 from kink import inject
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from src.db.repository import Repository
 from src.places.db.place_dbo import PlaceDBO

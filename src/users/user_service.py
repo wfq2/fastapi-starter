@@ -1,14 +1,12 @@
+from typing import TYPE_CHECKING
 from uuid import UUID
 
 from kink import inject
-from typing import TYPE_CHECKING
-
-from passlib.context import CryptContext
 
 from users.db.user_dbo import UserDBO
 from users.models.create_user_input import CreateUserInput
 from users.models.user import User
-from users.models.user_in import UserIn
+from users.security_helpers import pwd_context
 
 if TYPE_CHECKING:
     from src.db.repository import Repository
@@ -16,8 +14,6 @@ if TYPE_CHECKING:
 
 @inject
 class UserService:
-    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
     def __init__(self, repo: "Repository"):
         self.repository = repo
 
@@ -30,7 +26,7 @@ class UserService:
         return db_response
 
     async def create_user(self, user: CreateUserInput) -> User:
-        hashed_password = self.pwd_context.hash(user.password)
+        hashed_password = pwd_context.hash(user.password)
         user_dbo = UserDBO(**user.dict(), hashed_password=hashed_password)
         response = await self.repository.insert(user_dbo)
         await self.repository.commit()

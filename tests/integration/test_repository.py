@@ -1,6 +1,6 @@
 import pytest
 
-from db.current_session import current_session
+from container.request_context import current_session
 from src.places.db.place_dbo import PlaceDBO
 from tests.integration.helpers import get_default_place_dbo
 

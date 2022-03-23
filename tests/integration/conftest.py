@@ -3,7 +3,7 @@ import pytest_asyncio
 from kink import di
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from db.current_session import current_session
+from container.request_context import current_session
 from src.db.base import Base
 from src.db.repository import Repository
 from src.db.session import _engine
