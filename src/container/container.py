@@ -1,5 +1,6 @@
 from kink import di
 
+from items.item_service import ItemService
 from src.db.repository import Repository
 from src.db.session import get_session
 from src.places.place_service import PlaceService
@@ -13,3 +14,4 @@ def init_container():
     di[PlaceService] = lambda di: PlaceService(di[Repository])
     di[UserService] = lambda di: UserService(di[Repository])
     di[SecurityService] = lambda di: SecurityService(di[UserService])
+    di[ItemService] = lambda di: ItemService(di[Repository])

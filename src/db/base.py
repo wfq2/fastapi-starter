@@ -23,3 +23,4 @@ from src.db.table_mapping import TableMapping  # noqa: F401,E402
 
 Place = TableMapping["PlaceDBO"]
 User = TableMapping["UserDBO"]
+Item = TableMapping["ItemDBO"]

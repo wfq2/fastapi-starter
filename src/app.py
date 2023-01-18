@@ -9,12 +9,14 @@ from exceptions.does_not_exist_exception import DoesNotExistException
 from src.container.container import init_container
 from src.places.controller import router as places_router
 from src.users.controller import router as user_router
+from src.items.controller import router as items_router
 from users.models.user import anonymous_user
 from users.security_service import SecurityService
 
 app = FastAPI()
 app.include_router(places_router)
 app.include_router(user_router)
+app.include_router(items_router)
 templates = Jinja2Templates(directory="static")
 
 

@@ -2,6 +2,7 @@ from typing import TypeVar, Type, Any
 from uuid import UUID
 
 from sqlalchemy import update, select, insert
+from sqlalchemy.orm import joinedload
 
 from container.request_context import RequestContext
 from .base_dbo import BaseDBO
@@ -30,9 +31,15 @@ class Repository:
     def _table(self, dbo: Type[T]):
         return self.table_mapping[dbo.__name__]
 
+    def get_table(self, dbo: Type[T]):
+        return self._table(dbo)
+
+    async def execute(self, statement):
+        return await self.db_session.execute(statement)
+
     async def insert(self, dbo: T) -> T:
         entry = self._table(dbo.__class__)
-        statement = insert(entry).values(**dbo.dict())
+        statement = insert(entry).values(**dbo.dict(exclude_none=True))
         await self.db_session.execute(statement)
         return dbo
 
@@ -41,13 +48,19 @@ class Repository:
         statement = update(entry).where(entry.id == dbo.id).values(**dbo.dict())
         await self.db_session.execute(statement)
 
-    async def get_by_id(self, dbo: Type[T], id: UUID) -> T:
+    async def get_by_id(self, dbo: Type[T], id: UUID, include_relationships=False) -> T:
         entry = self._table(dbo)
         statement = select(entry).where(entry.id == id)
-        response = await self.db_session.execute(statement)
+        if include_relationships:
+            statement = statement.options(joinedload("*"))
+            response = await self.db_session.execute(statement)
+            response = response.unique()
+        else:
+            response = await self.db_session.execute(statement)
         if not response:
             raise DoesNotExistException
-        return dbo(**response.fetchone()[0].__dict__)
+        item = response.fetchone()[0]
+        return dbo.from_orm(item)
 
     async def get_by_field(self, dbo: Type[T], field: str, value: Any) -> T:
         entry = self._table(dbo)
